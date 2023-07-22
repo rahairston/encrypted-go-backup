@@ -24,6 +24,7 @@ This project runs off of a user provided Config file named `config.json`
 |`key.path`|The full path to the location of the key files||`~/.ssh/`*|
 |`backupPath`|The path to find, encrypt, and upload files from. (must be directory)|X|None|
 |`decryptPath`|The path to store decrypted files on a decrypt run||None|
+|`profile`| AWS Profile name for profiles stored on running machine||`default`
 
 ### Example config.json
 
@@ -38,7 +39,8 @@ This project runs off of a user provided Config file named `config.json`
         "path": "key-location-on-computer"
     },
     "backupPath": "folder-location-to-start-backup",
-    "decryptPath": "folder-to-store-decrypted-files"
+    "decryptPath": "folder-to-store-decrypted-files",
+    "profile": "aws-profile-name"
 }
 ```
 
@@ -57,3 +59,38 @@ By default, the script will ENCRYPT files without any argument present. The only
 `./backup`\
 `./backup encrypt`\
 `./backup decrypt`
+
+## Setting up AWS Access
+
+The profile can be chosen in the Config such that this only runs with the minimum required permissions and not default permissions.
+
+### Minimum IAM Permissions required
+
+1. A User for the Access Key/Secret Access Key when using the profile setup needs to be created in AWS.
+2. A Policy with the following Permissions needs to be attached to the User
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PutAndGetObject",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject"
+            ],
+            "Resource": "arn:aws:s3:::<bucket-name>/*"
+        },
+        {
+            "Sid": "ListBucketSid",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": "arn:aws:s3:::<bucket-name>"
+        }
+    ]
+}
+```
+
+This is the minimum required setup for AWS Access.

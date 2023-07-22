@@ -17,16 +17,20 @@ type KeyObject struct {
 }
 
 type ConfigFile struct {
-	S3         S3Object  `json:"s3"`
-	Key        KeyObject `json:"key"`
-	BackupPath string    `json:"backupPath"`
+	S3          S3Object  `json:"s3"`
+	Key         KeyObject `json:"key"`
+	BackupPath  string    `json:"backupPath"`
+	DecryptPath string    `json:"decryptPath"`
+	Profile     string    `json:"profile"`
 }
 
 type BackupConfig struct {
-	KeyFile    string
-	Bucket     string
-	Prefix     string
-	BackupPath string
+	KeyFile     string
+	Bucket      string
+	Prefix      string
+	BackupPath  string
+	DecryptPath string
+	Profile     string
 }
 
 func BuildBackupConfig() (*BackupConfig, error) {
@@ -53,7 +57,8 @@ func BuildBackupConfig() (*BackupConfig, error) {
 	}
 
 	config := ConfigFile{
-		Key: keyObject,
+		Key:     keyObject,
+		Profile: "default",
 	}
 
 	json.Unmarshal(jsonData, &config)
@@ -63,5 +68,6 @@ func BuildBackupConfig() (*BackupConfig, error) {
 		Bucket:     config.S3.Bucket,
 		Prefix:     config.S3.Prefix,
 		BackupPath: config.BackupPath,
+		Profile:    config.Profile,
 	}, nil
 }

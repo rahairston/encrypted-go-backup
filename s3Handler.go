@@ -17,8 +17,9 @@ type BucketHandler struct {
 	prefix string
 }
 
-func BuildBucket(bucketName string, keyPrefix string) (*BucketHandler, error) {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+func BuildBucket(backupConfig *BackupConfig) (*BucketHandler, error) {
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithSharedConfigProfile(backupConfig.Profile))
 
 	if err != nil {
 		return nil, err
@@ -26,8 +27,8 @@ func BuildBucket(bucketName string, keyPrefix string) (*BucketHandler, error) {
 
 	return &BucketHandler{
 		client: s3.NewFromConfig(cfg),
-		bucket: aws.String(bucketName),
-		prefix: keyPrefix,
+		bucket: aws.String(backupConfig.Bucket),
+		prefix: backupConfig.Prefix,
 	}, nil
 
 }

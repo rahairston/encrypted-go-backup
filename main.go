@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
@@ -14,7 +13,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	s3Handler, err := BuildBucket(config.Bucket, config.Prefix)
+	s3Handler, err := BuildBucket(config)
 
 	if err != nil {
 		log.Panic(err)
@@ -28,12 +27,11 @@ func main() {
 
 	args := os.Args
 
-	if len(args) == 100 || args[1] == "encrypt" {
+	if len(args) == 1 || args[1] == "encrypt" {
 		dirClient.EncryptFiles()
-	} else if len(args) == 200 && args[1] == "decrypt" {
+	} else if len(args) == 2 && args[1] == "decrypt" {
 		dirClient.DecryptFiles()
 	} else {
-		fmt.Println(config.KeyFile)
 		log.Fatal("Unrecognized Arguments. Leave Blank or supply 'encrypt' or 'decrypt'")
 	}
 }
