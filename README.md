@@ -22,9 +22,17 @@ This project runs off of a user provided Config file named `config.json`
 |`s3.prefix`| Prefix to append to the file names when pushing to S3 | |None|
 |`key.fileName`|the filename of the public key/private key combo. Only provide the base name. the `.pub` will be appended|X|None|
 |`key.path`|The full path to the location of the key files||`~/.ssh/`*|
-|`backupPath`|The path to find, encrypt, and upload files from. (must be directory)|X|None|
+|`backup.path`**|The path to find, encrypt, and upload files from. (must be directory)|X|None|
+|`backup.connection.type`|Type of connection to make (must be one of `local` or `smb`)|X|None|
+|`backup.connection.smbConfig.authentication.username`|Username for an SMB Connection|X (if type `smb`)|None|
+|`backup.connection.smbConfig.authentication.password`|Password for an SMB Connection|X (if type `smb`)|None|
+|`backup.connection.smbConfig.mountPoint`|SMB Mount Point to mount to.|X (if type `smb`)|None|
+|`backup.connection.smbConfig.host`|SMB Server Hostname|X (if type `smb`)|None|
+|`backup.connection.smbConfig.port`|SMB Server Port||445|
 |`decryptPath`|The path to store decrypted files on a decrypt run||None|
 |`profile`| AWS Profile name for profiles stored on running machine||`default`
+
+**\*\* - NOTE**: Pathing will be OS specific with Unix like environments needing `/a/b/c` in the config and Windows like environments needing `\\a\\b\\c` (double slash due to JSON escape characters)
 
 ### Example config.json
 
@@ -38,7 +46,22 @@ This project runs off of a user provided Config file named `config.json`
         "fileName": "key-name-from-above",
         "path": "key-location-on-computer"
     },
-    "backupPath": "folder-location-to-start-backup",
+    "backup": {
+        "path": "path/of/files/to/backup",
+        "connection": {
+            "type": "smb",
+            "smbConfig": {
+                "authentication": {
+                    "username": "username",
+                    "password": "password"
+                },
+                "mountPoint": "mountName",
+                "host": "hostname",
+                "port": "445"
+            }
+
+        }
+    },
     "decryptPath": "folder-to-store-decrypted-files",
     "profile": "aws-profile-name"
 }

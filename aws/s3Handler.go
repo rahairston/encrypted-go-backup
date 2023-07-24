@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"strings"
 
 	"backup/types"
 
@@ -36,10 +37,14 @@ func BuildBucket(backupConfig *types.BackupConfig) (*BucketHandler, error) {
 }
 
 func (bucket BucketHandler) PutObject(key string, body []byte) error {
+	var adjustedKey = key
+	if strings.Contains(key, "\\") {
+		adjustedKey = strings.Replace(key, "\\", "/", -1)
+	}
 
 	_, err := bucket.client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: bucket.bucket,
-		Key:    aws.String(bucket.prefix + "/" + key),
+		Key:    aws.String(bucket.prefix + "/" + adjustedKey),
 		Body:   bytes.NewReader(body),
 	})
 

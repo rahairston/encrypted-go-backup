@@ -17,6 +17,11 @@ type SmbClient struct {
 }
 
 func SmbConnect(config types.SmbConfig) (*SmbClient, error) {
+	var port = config.Port
+	if port == "" {
+		port = "445"
+	}
+
 	conn, err := net.Dial("tcp", config.Host+":"+config.Port)
 
 	if err != nil {
