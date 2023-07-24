@@ -1,25 +1,34 @@
 package main
 
 import (
+	"backup/aws"
+	"backup/config"
+	"backup/filesystem"
 	"log"
 	"os"
 )
 
 func main() {
 
-	config, err := BuildBackupConfig()
+	config, err := config.BuildBackupConfig()
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	s3Handler, err := BuildBucket(config)
+	s3Handler, err := aws.BuildBucket(config)
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	dirClient, err := BuildDirClient(config.BackupPath, config.KeyFile, s3Handler)
+	fs, err := filesystem.Connect(config.Backup.Connection)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	dirClient, err := filesystem.BuildDirClient(config.Backup.Path, config.KeyFile, s3Handler, fs)
 
 	if err != nil {
 		log.Panic(err)

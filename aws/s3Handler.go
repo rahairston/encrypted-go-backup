@@ -1,10 +1,12 @@
-package main
+package aws
 
 import (
 	"bytes"
 	"context"
 	"io"
 	"log"
+
+	"backup/types"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -17,7 +19,7 @@ type BucketHandler struct {
 	prefix string
 }
 
-func BuildBucket(backupConfig *BackupConfig) (*BucketHandler, error) {
+func BuildBucket(backupConfig *types.BackupConfig) (*BucketHandler, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithSharedConfigProfile(backupConfig.Profile))
 
@@ -33,7 +35,7 @@ func BuildBucket(backupConfig *BackupConfig) (*BucketHandler, error) {
 
 }
 
-func (bucket BucketHandler) putObject(key string, body []byte) error {
+func (bucket BucketHandler) PutObject(key string, body []byte) error {
 
 	_, err := bucket.client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: bucket.bucket,
@@ -44,10 +46,10 @@ func (bucket BucketHandler) putObject(key string, body []byte) error {
 	return err
 }
 
-func (bucket BucketHandler) getObject(key *string) ([]byte, error) {
+func (bucket BucketHandler) GetObject(key string) ([]byte, error) {
 	result, err := bucket.client.GetObject(context.TODO(), &s3.GetObjectInput{
 		Bucket: bucket.bucket,
-		Key:    key,
+		Key:    aws.String(key),
 	})
 
 	if err != nil {

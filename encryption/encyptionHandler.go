@@ -1,4 +1,4 @@
-package main
+package encryption
 
 import (
 	"crypto/rand"
@@ -54,7 +54,7 @@ func BuildKeyHandler(fileName string) (*KeyHandler, error) {
 	}, nil
 }
 
-func (keys KeyHandler) encrypt(data []byte) ([]byte, error) {
+func (keys KeyHandler) Encrypt(data []byte) ([]byte, error) {
 	hash := sha512.New()
 	dataLength := len(data)
 	step := keys.publicKey.Size() - 2*hash.Size() - 2
@@ -83,7 +83,7 @@ func (keys KeyHandler) encrypt(data []byte) ([]byte, error) {
 	return []byte(base64.StdEncoding.EncodeToString(encryptedBytes)), nil
 }
 
-func (keys KeyHandler) decrypt(data []byte) ([]byte, error) {
+func (keys KeyHandler) Decrypt(data []byte) ([]byte, error) {
 
 	data2, err := base64.StdEncoding.DecodeString(string(data))
 	if err != nil {
