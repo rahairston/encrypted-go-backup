@@ -14,7 +14,9 @@ Make sure the public key and private key share the same name, with the private k
 
 ## Generating the config.json
 
-This project runs off of a user provided Config file named `config.json`
+This project runs off of a user provided Config file named `config.json` located in:
+- `/etc/backitup/` on Unix like environments
+- `\$HOME_DIRECTORY\AppData\Local\backitup\` on Windows environments
 
 | Config item key | Description | required | default |
 |-|-|-|-|

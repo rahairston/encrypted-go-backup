@@ -52,11 +52,9 @@ func SmbConnect(config types.SmbConfig) (*SmbClient, error) {
 func (smbClient SmbClient) GetFileNames(path string) []string {
 	var result []string
 	var adjustedPath string = path
-	if !strings.HasSuffix(path, "\\") {
+	if !strings.HasSuffix(path, "\\") { // Keep \\ since SMB is Windows file pathing
 		adjustedPath = path + "\\"
 	}
-	// defer smbClient.conn.Close()
-	// defer smbClient.s.Logoff()
 
 	files, _ := smbClient.fs.ReadDir(path)
 
@@ -93,7 +91,7 @@ func (smbClient SmbClient) ValidatePath(path string) string {
 		panic(errors.New("Path provided must be a Folder."))
 	}
 
-	if !strings.HasSuffix(path, "\\") {
+	if !strings.HasSuffix(path, "\\") { // Keep \\ since SMB is Windows file pathing
 		return path + "\\"
 	}
 
@@ -102,4 +100,9 @@ func (smbClient SmbClient) ValidatePath(path string) string {
 
 func (smbClient SmbClient) ReadFile(fileName string) ([]byte, error) {
 	return smbClient.fs.ReadFile(fileName)
+}
+
+func (smbClient SmbClient) Close() {
+	smbClient.s.Logoff()
+	smbClient.conn.Close()
 }

@@ -34,6 +34,8 @@ func BuildDirClient(path string, keyFileName string, s3Handler *aws.BucketHandle
 }
 
 func (dir DirClient) EncryptFiles() {
+	defer dir.fs.Close()
+
 	fileNames := dir.fs.GetFileNames(*dir.path)
 
 	c := make(chan string, len(fileNames))
@@ -72,6 +74,7 @@ func (dir DirClient) EncryptAndUploadFile(fileName string, c chan string) {
 }
 
 func (dir DirClient) DecryptFiles() {
+	defer dir.fs.Close()
 	fileNames := dir.fs.GetFileNames(*dir.path)
 
 	c := make(chan string, len(fileNames))

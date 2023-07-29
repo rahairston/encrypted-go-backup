@@ -38,13 +38,17 @@ func BuildBucket(backupConfig *types.BackupConfig) (*BucketHandler, error) {
 
 func (bucket BucketHandler) PutObject(key string, body []byte) error {
 	var adjustedKey = key
-	if strings.Contains(key, "\\") {
+	if strings.Contains(key, "\\") { // AWS uses Linux-like pathing
 		adjustedKey = strings.Replace(key, "\\", "/", -1)
+	}
+
+	if !strings.HasSuffix(adjustedKey, "/") {
+		adjustedKey = "/" + adjustedKey
 	}
 
 	_, err := bucket.client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: bucket.bucket,
-		Key:    aws.String(bucket.prefix + "/" + adjustedKey),
+		Key:    aws.String(bucket.prefix + adjustedKey),
 		Body:   bytes.NewReader(body),
 	})
 

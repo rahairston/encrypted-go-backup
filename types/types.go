@@ -4,6 +4,7 @@ type FileSystem interface {
 	GetFileNames(path string) []string
 	ValidatePath(path string) string
 	ReadFile(fileName string) ([]byte, error)
+	Close()
 }
 
 type FileConfigType string
@@ -54,10 +55,11 @@ type ConfigFile struct {
 }
 
 type BackupConfig struct {
-	KeyFile     string
-	Bucket      string
-	Prefix      string
-	Backup      BackupObject
-	DecryptPath string
-	Profile     string
+	KeyFile        string
+	Bucket         string
+	Prefix         string
+	Backup         BackupObject
+	DecryptPath    string
+	Profile        string
+	LastModifiedDt int
 }

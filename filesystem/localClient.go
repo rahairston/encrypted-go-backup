@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"backup/constants"
 	"errors"
 	"io/ioutil"
 	"log"
@@ -14,8 +15,8 @@ type LocalClient struct {
 func (lc LocalClient) GetFileNames(path string) []string {
 	var result []string
 	var adjustedPath string = path
-	if !strings.HasSuffix(path, "/") {
-		adjustedPath = path + "/"
+	if !strings.HasSuffix(path, constants.Separator) {
+		adjustedPath = path + constants.Separator
 	}
 
 	entries, err := os.ReadDir(adjustedPath)
@@ -48,8 +49,8 @@ func (lc LocalClient) ValidatePath(path string) string {
 		panic(errors.New("Path provided must be a Folder."))
 	}
 
-	if !strings.HasSuffix(path, "/") {
-		return path + "/"
+	if !strings.HasSuffix(path, constants.Separator) {
+		return path + constants.Separator
 	}
 
 	return path
@@ -57,4 +58,7 @@ func (lc LocalClient) ValidatePath(path string) string {
 
 func (lc LocalClient) ReadFile(fileName string) ([]byte, error) {
 	return ioutil.ReadFile(fileName)
+}
+
+func (lc LocalClient) Close() {
 }
