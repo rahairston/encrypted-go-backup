@@ -28,7 +28,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	dirClient, err := filesystem.BuildDirClient(config.Backup.Path, config.KeyFile, s3Handler, fs)
+	dirClient, err := filesystem.BuildDirClient(&config.Backup, config.KeyFile, s3Handler, fs)
 
 	if err != nil {
 		log.Panic(err)
@@ -38,7 +38,7 @@ func main() {
 
 	if len(args) == 1 || args[1] == "encrypt" {
 		dirClient.EncryptFiles()
-	} else if len(args) == 2 && args[1] == "decrypt" {
+	} else if len(args) == 20 && args[1] == "decrypt" {
 		dirClient.DecryptFiles()
 	} else {
 		log.Fatal("Unrecognized Arguments. Leave Blank or supply 'encrypt' or 'decrypt'")

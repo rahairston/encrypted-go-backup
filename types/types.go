@@ -1,7 +1,7 @@
 package types
 
 type FileSystem interface {
-	GetFileNames(path string) []string
+	GetFileNames(path string, exclusions ExcludeObject) []string
 	ValidatePath(path string) string
 	ReadFile(fileName string) ([]byte, error)
 	Close()
@@ -17,6 +17,7 @@ const (
 type S3Object struct {
 	Bucket string `json:"bucket"`
 	Prefix string `json:"prefix"`
+	Tier   string `json:"tier"`
 }
 
 type KeyObject struct {
@@ -41,9 +42,15 @@ type ConnectionObject struct {
 	SmbConfig SmbConfig      `json:"smbConfig"`
 }
 
+type ExcludeObject struct {
+	Files   []string `json:"files"`
+	Folders []string `json:"folders"`
+}
+
 type BackupObject struct {
 	Path       string           `json:"path"`
 	Connection ConnectionObject `json:"connection"`
+	Exclusions ExcludeObject    `json:"exclude"`
 }
 
 type ConfigFile struct {

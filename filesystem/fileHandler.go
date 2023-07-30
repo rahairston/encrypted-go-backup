@@ -9,13 +9,17 @@ import (
 )
 
 type DirClient struct {
-	path      *string
-	keys      *encryption.KeyHandler
-	s3Handler *aws.BucketHandler
-	fs        types.FileSystem
+	path       *string
+	keys       *encryption.KeyHandler
+	s3Handler  *aws.BucketHandler
+	fs         types.FileSystem
+	exclusions types.ExcludeObject
 }
 
-func BuildDirClient(path string, keyFileName string, s3Handler *aws.BucketHandler, fs types.FileSystem) (*DirClient, error) {
+func BuildDirClient(backupConfig *types.BackupObject, keyFileName string,
+	s3Handler *aws.BucketHandler, fs types.FileSystem) (*DirClient, error) {
+
+	path := backupConfig.Path
 
 	adjustedPath := fs.ValidatePath(path)
 
@@ -26,17 +30,18 @@ func BuildDirClient(path string, keyFileName string, s3Handler *aws.BucketHandle
 	}
 
 	return &DirClient{
-		path:      &adjustedPath,
-		keys:      keys,
-		s3Handler: s3Handler,
-		fs:        fs,
+		path:       &adjustedPath,
+		keys:       keys,
+		s3Handler:  s3Handler,
+		fs:         fs,
+		exclusions: backupConfig.Exclusions,
 	}, nil
 }
 
 func (dir DirClient) EncryptFiles() {
 	defer dir.fs.Close()
 
-	fileNames := dir.fs.GetFileNames(*dir.path)
+	fileNames := dir.fs.GetFileNames(*dir.path, dir.exclusions)
 
 	c := make(chan string, len(fileNames))
 
@@ -75,7 +80,7 @@ func (dir DirClient) EncryptAndUploadFile(fileName string, c chan string) {
 
 func (dir DirClient) DecryptFiles() {
 	defer dir.fs.Close()
-	fileNames := dir.fs.GetFileNames(*dir.path)
+	fileNames := dir.fs.GetFileNames(*dir.path, dir.exclusions)
 
 	c := make(chan string, len(fileNames))
 

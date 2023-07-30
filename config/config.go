@@ -34,7 +34,7 @@ func BuildBackupConfig() (*types.BackupConfig, error) {
 		Backup:         config.Backup,
 		DecryptPath:    config.DecryptPath,
 		Profile:        config.Profile,
-		LastModifiedDt: 0,
+		LastModifiedDt: parseLastModifiedFile(consts),
 	}, nil
 }
 
@@ -72,7 +72,7 @@ func parseJSONConfig(consts *constants.BackupConstants) (*types.ConfigFile, erro
 }
 
 func parseLastModifiedFile(consts *constants.BackupConstants) int {
-	file, err := os.Open(consts.ConfigLocation + "LastRun.conf")
+	file, err := os.Open(consts.ConfigLocation + "last_run.conf")
 	if err != nil {
 		return -1
 	}

@@ -2,6 +2,7 @@ package filesystem
 
 import (
 	"backup/constants"
+	"backup/types"
 	"errors"
 	"io/ioutil"
 	"log"
@@ -12,7 +13,7 @@ import (
 type LocalClient struct {
 }
 
-func (lc LocalClient) GetFileNames(path string) []string {
+func (lc LocalClient) GetFileNames(path string, exclusions types.ExcludeObject) []string {
 	var result []string
 	var adjustedPath string = path
 	if !strings.HasSuffix(path, constants.Separator) {
@@ -30,7 +31,7 @@ func (lc LocalClient) GetFileNames(path string) []string {
 			continue
 		}
 		if e.IsDir() {
-			result = append(result, lc.GetFileNames(adjustedPath+e.Name())...)
+			result = append(result, lc.GetFileNames(adjustedPath+e.Name(), exclusions)...)
 		} else {
 			result = append(result, adjustedPath+e.Name())
 		}
