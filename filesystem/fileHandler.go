@@ -2,8 +2,8 @@ package filesystem
 
 import (
 	"backup/aws"
+	"backup/common"
 	"backup/encryption"
-	"backup/types"
 	"log"
 	"strings"
 )
@@ -12,12 +12,12 @@ type DirClient struct {
 	path       *string
 	keys       *encryption.KeyHandler
 	s3Handler  *aws.BucketHandler
-	fs         types.FileSystem
-	exclusions types.ExcludeObject
+	fs         common.FileSystem
+	exclusions common.ExcludeObject
 }
 
-func BuildDirClient(backupConfig *types.BackupObject, keyFileName string,
-	s3Handler *aws.BucketHandler, fs types.FileSystem) (*DirClient, error) {
+func BuildDirClient(backupConfig *common.BackupObject, keyFileName string,
+	s3Handler *aws.BucketHandler, fs common.FileSystem) (*DirClient, error) {
 
 	path := backupConfig.Path
 

@@ -1,8 +1,7 @@
 package filesystem
 
 import (
-	"backup/constants"
-	"backup/types"
+	"backup/common"
 	"errors"
 	"io/ioutil"
 	"log"
@@ -13,11 +12,11 @@ import (
 type LocalClient struct {
 }
 
-func (lc LocalClient) GetFileNames(path string, exclusions types.ExcludeObject) []string {
+func (lc LocalClient) GetFileNames(path string, exclusions common.ExcludeObject) []string {
 	var result []string
 	var adjustedPath string = path
-	if !strings.HasSuffix(path, constants.Separator) {
-		adjustedPath = path + constants.Separator
+	if !strings.HasSuffix(path, common.Separator) {
+		adjustedPath = path + common.Separator
 	}
 
 	entries, err := os.ReadDir(adjustedPath)
@@ -29,10 +28,9 @@ func (lc LocalClient) GetFileNames(path string, exclusions types.ExcludeObject) 
 	for _, e := range entries {
 		if strings.HasPrefix(e.Name(), ".") {
 			continue
-		}
-		if e.IsDir() {
+		} else if e.IsDir() && !common.ShouldBeExcluded(e.Name(), exclusions.Folders) {
 			result = append(result, lc.GetFileNames(adjustedPath+e.Name(), exclusions)...)
-		} else {
+		} else if !e.IsDir() && !common.ShouldBeExcluded(e.Name(), exclusions.Files) {
 			result = append(result, adjustedPath+e.Name())
 		}
 	}
@@ -44,14 +42,10 @@ func (lc LocalClient) ValidatePath(path string) string {
 	info, err := os.Stat(path)
 	if err != nil {
 		panic(err)
-	}
-
-	if !info.IsDir() {
+	} else if !info.IsDir() {
 		panic(errors.New("Path provided must be a Folder."))
-	}
-
-	if !strings.HasSuffix(path, constants.Separator) {
-		return path + constants.Separator
+	} else if !strings.HasSuffix(path, common.Separator) {
+		return path + common.Separator
 	}
 
 	return path

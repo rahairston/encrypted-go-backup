@@ -1,4 +1,4 @@
-package types
+package common
 
 type FileSystem interface {
 	GetFileNames(path string, exclusions ExcludeObject) []string

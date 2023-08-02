@@ -1,15 +1,15 @@
 package filesystem
 
 import (
-	"backup/types"
+	"backup/common"
 )
 
-func Connect(connectionConfig types.ConnectionObject) (types.FileSystem, error) {
+func Connect(connectionConfig common.ConnectionObject) (common.FileSystem, error) {
 
 	switch connectionConfig.Type {
-	case types.Smb:
+	case common.Smb:
 		return SmbConnect(connectionConfig.SmbConfig)
-	case types.Local:
+	case common.Local:
 		return &LocalClient{}, nil
 	default:
 		return nil, nil

@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"backup/types"
+	"backup/common"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -20,7 +20,7 @@ type BucketHandler struct {
 	prefix string
 }
 
-func BuildBucket(backupConfig *types.BackupConfig) (*BucketHandler, error) {
+func BuildBucket(backupConfig *common.BackupConfig) (*BucketHandler, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithSharedConfigProfile(backupConfig.Profile))
 

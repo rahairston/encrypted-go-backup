@@ -1,16 +1,15 @@
 package config
 
 import (
-	"backup/constants"
-	"backup/types"
+	"backup/common"
 	"encoding/json"
 	"io/ioutil"
 	"os"
 	"strconv"
 )
 
-func BuildBackupConfig() (*types.BackupConfig, error) {
-	consts := constants.GetOSConstants()
+func BuildBackupConfig() (*common.BackupConfig, error) {
+	consts := common.GetOSConstants()
 
 	_, err := os.Stat(consts.ConfigLocation)
 	if err != nil {
@@ -27,7 +26,7 @@ func BuildBackupConfig() (*types.BackupConfig, error) {
 		return nil, err
 	}
 
-	return &types.BackupConfig{
+	return &common.BackupConfig{
 		KeyFile:        config.Key.Path + config.Key.FileName,
 		Bucket:         config.S3.Bucket,
 		Prefix:         config.S3.Prefix,
@@ -38,7 +37,7 @@ func BuildBackupConfig() (*types.BackupConfig, error) {
 	}, nil
 }
 
-func parseJSONConfig(consts *constants.BackupConstants) (*types.ConfigFile, error) {
+func parseJSONConfig(consts *common.BackupConstants) (*common.ConfigFile, error) {
 	jsonFile, err := os.Open(consts.ConfigLocation + "config.json")
 	defer jsonFile.Close()
 	if err != nil {
@@ -57,11 +56,11 @@ func parseJSONConfig(consts *constants.BackupConstants) (*types.ConfigFile, erro
 		return nil, err
 	}
 
-	keyObject := types.KeyObject{
+	keyObject := common.KeyObject{
 		Path: dirname + "/.ssh/",
 	}
 
-	config := types.ConfigFile{
+	config := common.ConfigFile{
 		Key:     keyObject,
 		Profile: "default",
 	}
@@ -71,7 +70,7 @@ func parseJSONConfig(consts *constants.BackupConstants) (*types.ConfigFile, erro
 	return &config, nil
 }
 
-func parseLastModifiedFile(consts *constants.BackupConstants) int {
+func parseLastModifiedFile(consts *common.BackupConstants) int {
 	file, err := os.Open(consts.ConfigLocation + "last_run.conf")
 	if err != nil {
 		return -1

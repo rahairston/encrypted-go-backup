@@ -1,9 +1,8 @@
 package filesystem
 
 import (
-	"backup/types"
+	"backup/common"
 	"errors"
-	"fmt"
 	"net"
 	"strings"
 
@@ -16,7 +15,7 @@ type SmbClient struct {
 	conn net.Conn
 }
 
-func SmbConnect(config types.SmbConfig) (*SmbClient, error) {
+func SmbConnect(config common.SmbConfig) (*SmbClient, error) {
 	var port = config.Port
 	if port == "" {
 		port = "445"
@@ -49,7 +48,7 @@ func SmbConnect(config types.SmbConfig) (*SmbClient, error) {
 	}, nil
 }
 
-func (smbClient SmbClient) GetFileNames(path string, exclusions types.ExcludeObject) []string {
+func (smbClient SmbClient) GetFileNames(path string, exclusions common.ExcludeObject) []string {
 	var result []string
 	var adjustedPath string = path
 	if !strings.HasSuffix(path, "\\") { // Keep \\ since SMB is Windows file pathing
@@ -61,19 +60,15 @@ func (smbClient SmbClient) GetFileNames(path string, exclusions types.ExcludeObj
 	for _, file := range files {
 		if strings.HasPrefix(file.Name(), ".") {
 			continue
-		}
-		if file.IsDir() {
+		} else if file.IsDir() && !common.ShouldBeExcluded(file.Name(), exclusions.Folders) {
 			result = append(result, smbClient.GetFileNames(adjustedPath+file.Name(), exclusions)...)
-		} else {
+		} else if !file.IsDir() && !common.ShouldBeExcluded(file.Name(), exclusions.Files) {
 			result = append(result, adjustedPath+file.Name())
 			_, err := smbClient.fs.ReadFile(adjustedPath + file.Name())
 
 			if err != nil {
-				fmt.Println("erro")
 				panic(err)
 			}
-
-			fmt.Println(adjustedPath + file.Name())
 		}
 	}
 
@@ -85,13 +80,9 @@ func (smbClient SmbClient) ValidatePath(path string) string {
 
 	if err != nil {
 		panic(err)
-	}
-
-	if !info.IsDir() {
+	} else if !info.IsDir() {
 		panic(errors.New("Path provided must be a Folder."))
-	}
-
-	if !strings.HasSuffix(path, "\\") { // Keep \\ since SMB is Windows file pathing
+	} else if !strings.HasSuffix(path, "\\") { // Keep \\ since SMB is Windows file pathing
 		return path + "\\"
 	}
 
