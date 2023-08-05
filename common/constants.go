@@ -11,7 +11,8 @@ type BackupConstants struct {
 }
 
 const (
-	Separator string = string(os.PathSeparator)
+	Separator       string = string(os.PathSeparator)
+	LastRunFileName string = "last_run.conf"
 )
 
 func GetOSConstants() *BackupConstants {

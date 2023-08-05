@@ -1,5 +1,9 @@
 package common
 
+import (
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+)
+
 type FileSystem interface {
 	GetFileNames(path string, exclusions ExcludeObject) []string
 	ValidatePath(path string) string
@@ -15,9 +19,9 @@ const (
 )
 
 type S3Object struct {
-	Bucket string `json:"bucket"`
-	Prefix string `json:"prefix"`
-	Tier   string `json:"tier"`
+	Bucket string             `json:"bucket"`
+	Prefix string             `json:"prefix"`
+	Tier   types.StorageClass `json:"tier"`
 }
 
 type KeyObject struct {
@@ -63,8 +67,7 @@ type ConfigFile struct {
 
 type BackupConfig struct {
 	KeyFile        string
-	Bucket         string
-	Prefix         string
+	S3Config       S3Object
 	Backup         BackupObject
 	DecryptPath    string
 	Profile        string

@@ -15,9 +15,8 @@ import (
 )
 
 type BucketHandler struct {
-	client *s3.Client
-	bucket *string
-	prefix string
+	client   *s3.Client
+	s3Config *common.S3Object
 }
 
 func BuildBucket(backupConfig *common.BackupConfig) (*BucketHandler, error) {
@@ -29,9 +28,8 @@ func BuildBucket(backupConfig *common.BackupConfig) (*BucketHandler, error) {
 	}
 
 	return &BucketHandler{
-		client: s3.NewFromConfig(cfg),
-		bucket: aws.String(backupConfig.Bucket),
-		prefix: backupConfig.Prefix,
+		client:   s3.NewFromConfig(cfg),
+		s3Config: &backupConfig.S3Config,
 	}, nil
 
 }
@@ -47,9 +45,10 @@ func (bucket BucketHandler) PutObject(key string, body []byte) error {
 	}
 
 	_, err := bucket.client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: bucket.bucket,
-		Key:    aws.String(bucket.prefix + adjustedKey),
-		Body:   bytes.NewReader(body),
+		Bucket:       &bucket.s3Config.Bucket,
+		Key:          aws.String(bucket.s3Config.Prefix + adjustedKey),
+		Body:         bytes.NewReader(body),
+		StorageClass: bucket.s3Config.Tier,
 	})
 
 	return err
@@ -57,8 +56,8 @@ func (bucket BucketHandler) PutObject(key string, body []byte) error {
 
 func (bucket BucketHandler) GetObject(key string) ([]byte, error) {
 	result, err := bucket.client.GetObject(context.TODO(), &s3.GetObjectInput{
-		Bucket: bucket.bucket,
-		Key:    aws.String(key),
+		Bucket: &bucket.s3Config.Bucket,
+		Key:    &key,
 	})
 
 	if err != nil {

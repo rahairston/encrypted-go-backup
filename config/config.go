@@ -3,14 +3,15 @@ package config
 import (
 	"backup/common"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
-func BuildBackupConfig() (*common.BackupConfig, error) {
-	consts := common.GetOSConstants()
-
+func BuildBackupConfig(consts *common.BackupConstants) (*common.BackupConfig, error) {
 	_, err := os.Stat(consts.ConfigLocation)
 	if err != nil {
 		return nil, err
@@ -28,8 +29,7 @@ func BuildBackupConfig() (*common.BackupConfig, error) {
 
 	return &common.BackupConfig{
 		KeyFile:        config.Key.Path + config.Key.FileName,
-		Bucket:         config.S3.Bucket,
-		Prefix:         config.S3.Prefix,
+		S3Config:       config.S3,
 		Backup:         config.Backup,
 		DecryptPath:    config.DecryptPath,
 		Profile:        config.Profile,
@@ -60,8 +60,13 @@ func parseJSONConfig(consts *common.BackupConstants) (*common.ConfigFile, error)
 		Path: dirname + "/.ssh/",
 	}
 
+	s3Object := common.S3Object{
+		Tier: "STANDARD",
+	}
+
 	config := common.ConfigFile{
 		Key:     keyObject,
+		S3:      s3Object,
 		Profile: "default",
 	}
 
@@ -71,10 +76,12 @@ func parseJSONConfig(consts *common.BackupConstants) (*common.ConfigFile, error)
 }
 
 func parseLastModifiedFile(consts *common.BackupConstants) int {
-	file, err := os.Open(consts.ConfigLocation + "last_run.conf")
+	file, err := os.Open(consts.ConfigLocation + common.LastRunFileName)
 	if err != nil {
 		return -1
 	}
+
+	defer file.Close()
 
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
@@ -88,4 +95,18 @@ func parseLastModifiedFile(consts *common.BackupConstants) int {
 	}
 
 	return timestamp
+}
+
+func WriteLastModifiedFile(consts *common.BackupConstants) {
+	file, err := os.OpenFile(consts.ConfigLocation+common.LastRunFileName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer file.Close()
+
+	now := time.Now()
+
+	file.WriteString(fmt.Sprint(now.Unix()))
 }
