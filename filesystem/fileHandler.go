@@ -9,39 +9,41 @@ import (
 )
 
 type DirClient struct {
-	path       *string
-	keys       *encryption.KeyHandler
-	s3Handler  *aws.BucketHandler
-	fs         common.FileSystem
-	exclusions common.ExcludeObject
+	path           *string
+	keys           *encryption.KeyHandler
+	s3Handler      *aws.BucketHandler
+	fs             common.FileSystem
+	exclusions     common.ExcludeObject
+	lastModifiedDt int64
 }
 
-func BuildDirClient(backupConfig *common.BackupObject, keyFileName string,
+func BuildDirClient(backupConfig *common.BackupConfig,
 	s3Handler *aws.BucketHandler, fs common.FileSystem) (*DirClient, error) {
 
-	path := backupConfig.Path
+	path := backupConfig.Backup.Path
 
 	adjustedPath := fs.ValidatePath(path)
 
-	keys, err := encryption.BuildKeyHandler(keyFileName)
+	keys, err := encryption.BuildKeyHandler(backupConfig.KeyFile)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &DirClient{
-		path:       &adjustedPath,
-		keys:       keys,
-		s3Handler:  s3Handler,
-		fs:         fs,
-		exclusions: backupConfig.Exclusions,
+		path:           &adjustedPath,
+		keys:           keys,
+		s3Handler:      s3Handler,
+		fs:             fs,
+		exclusions:     backupConfig.Backup.Exclusions,
+		lastModifiedDt: backupConfig.LastModifiedDt,
 	}, nil
 }
 
 func (dir DirClient) EncryptFiles() {
 	defer dir.fs.Close()
 
-	fileNames := dir.fs.GetFileNames(*dir.path, dir.exclusions)
+	fileNames := dir.fs.GetFileNames(*dir.path, dir.exclusions, dir.lastModifiedDt)
 
 	c := make(chan string, len(fileNames))
 
@@ -78,9 +80,11 @@ func (dir DirClient) EncryptAndUploadFile(fileName string, c chan string) {
 	c <- fileName
 }
 
+// Maybe instead we List all items in S3 Bucket
+// then go Download and Decrypt into location
 func (dir DirClient) DecryptFiles() {
 	defer dir.fs.Close()
-	fileNames := dir.fs.GetFileNames(*dir.path, dir.exclusions)
+	fileNames := dir.fs.GetFileNames(*dir.path, dir.exclusions, dir.lastModifiedDt)
 
 	c := make(chan string, len(fileNames))
 

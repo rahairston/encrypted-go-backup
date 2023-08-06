@@ -31,7 +31,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	dirClient, err := filesystem.BuildDirClient(&conf.Backup, conf.KeyFile, s3Handler, fs)
+	dirClient, err := filesystem.BuildDirClient(conf, s3Handler, fs)
 
 	if err != nil {
 		log.Panic(err)

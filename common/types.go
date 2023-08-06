@@ -5,7 +5,7 @@ import (
 )
 
 type FileSystem interface {
-	GetFileNames(path string, exclusions ExcludeObject) []string
+	GetFileNames(path string, exclusions ExcludeObject, lastModifiedDt int64) []string
 	ValidatePath(path string) string
 	ReadFile(fileName string) ([]byte, error)
 	Close()
@@ -71,5 +71,5 @@ type BackupConfig struct {
 	Backup         BackupObject
 	DecryptPath    string
 	Profile        string
-	LastModifiedDt int
+	LastModifiedDt int64
 }

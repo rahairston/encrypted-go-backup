@@ -48,7 +48,7 @@ func SmbConnect(config common.SmbConfig) (*SmbClient, error) {
 	}, nil
 }
 
-func (smbClient SmbClient) GetFileNames(path string, exclusions common.ExcludeObject) []string {
+func (smbClient SmbClient) GetFileNames(path string, exclusions common.ExcludeObject, lastModifiedDt int64) []string {
 	var result []string
 	var adjustedPath string = path
 	if !strings.HasSuffix(path, "\\") { // Keep \\ since SMB is Windows file pathing
@@ -61,8 +61,8 @@ func (smbClient SmbClient) GetFileNames(path string, exclusions common.ExcludeOb
 		if strings.HasPrefix(file.Name(), ".") {
 			continue
 		} else if file.IsDir() && !common.ShouldBeExcluded(file.Name(), exclusions.Folders) {
-			result = append(result, smbClient.GetFileNames(adjustedPath+file.Name(), exclusions)...)
-		} else if !file.IsDir() && !common.ShouldBeExcluded(file.Name(), exclusions.Files) {
+			result = append(result, smbClient.GetFileNames(adjustedPath+file.Name(), exclusions, lastModifiedDt)...)
+		} else if !file.IsDir() && !common.ShouldBeExcluded(file.Name(), exclusions.Files) && file.ModTime().Unix() > lastModifiedDt {
 			result = append(result, adjustedPath+file.Name())
 			_, err := smbClient.fs.ReadFile(adjustedPath + file.Name())
 

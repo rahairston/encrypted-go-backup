@@ -12,7 +12,7 @@ import (
 type LocalClient struct {
 }
 
-func (lc LocalClient) GetFileNames(path string, exclusions common.ExcludeObject) []string {
+func (lc LocalClient) GetFileNames(path string, exclusions common.ExcludeObject, lastModifiedDt int64) []string {
 	var result []string
 	var adjustedPath string = path
 	if !strings.HasSuffix(path, common.Separator) {
@@ -26,11 +26,12 @@ func (lc LocalClient) GetFileNames(path string, exclusions common.ExcludeObject)
 	}
 
 	for _, e := range entries {
+		fileInfo, _ := e.Info()
 		if strings.HasPrefix(e.Name(), ".") {
 			continue
 		} else if e.IsDir() && !common.ShouldBeExcluded(e.Name(), exclusions.Folders) {
-			result = append(result, lc.GetFileNames(adjustedPath+e.Name(), exclusions)...)
-		} else if !e.IsDir() && !common.ShouldBeExcluded(e.Name(), exclusions.Files) {
+			result = append(result, lc.GetFileNames(adjustedPath+e.Name(), exclusions, lastModifiedDt)...)
+		} else if !e.IsDir() && !common.ShouldBeExcluded(e.Name(), exclusions.Files) && fileInfo.ModTime().Unix() > lastModifiedDt {
 			result = append(result, adjustedPath+e.Name())
 		}
 	}
