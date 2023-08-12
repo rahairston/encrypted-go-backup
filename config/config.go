@@ -78,20 +78,20 @@ func parseJSONConfig(consts *common.BackupConstants) (*common.ConfigFile, error)
 func parseLastModifiedFile(consts *common.BackupConstants) int64 {
 	file, err := os.Open(consts.ConfigLocation + common.LastRunFileName)
 	if err != nil {
-		return time.Now().Unix()
+		return -1
 	}
 
 	defer file.Close()
 
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		return time.Now().Unix()
+		return -1
 	}
 
 	timestamp, err := strconv.ParseInt(string(data), 10, 64)
 
 	if err != nil {
-		return time.Now().Unix()
+		return -1
 	}
 
 	return timestamp

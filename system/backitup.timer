@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup to AWS Encryption Service
+Requires=backitup@.service
+
+[Timer]
+Unit=backitup@.service
+OnCalendar=*-*-* 11:10:00
+
+[Install]
+WantedBy=timer.target

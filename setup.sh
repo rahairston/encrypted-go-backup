@@ -1,6 +1,8 @@
-mkdir -p /var/log/backitup/
-mkdir -p /etc/backitup
+USER_ID=$USER
 
-chmod -r g+w /var/log/backitup
-chmod -r g+w /etc/backitup
+sudo install -d -o $USER_ID -g $USER_ID -m 0774 -p /var/log/backitup/
+sudo install -d -o $USER_ID -g $USER_ID -m 0774 -p /etc/backitup/
 
+go build .
+
+sudo cp system/* /etc/systemd/system/

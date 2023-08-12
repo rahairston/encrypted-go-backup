@@ -64,11 +64,6 @@ func (smbClient SmbClient) GetFileNames(path string, exclusions common.ExcludeOb
 			result = append(result, smbClient.GetFileNames(adjustedPath+file.Name(), exclusions, lastModifiedDt)...)
 		} else if !file.IsDir() && !common.ShouldBeExcluded(file.Name(), exclusions.Files) && file.ModTime().Unix() > lastModifiedDt {
 			result = append(result, adjustedPath+file.Name())
-			_, err := smbClient.fs.ReadFile(adjustedPath + file.Name())
-
-			if err != nil {
-				panic(err)
-			}
 		}
 	}
 
