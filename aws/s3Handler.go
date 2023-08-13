@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 type BucketHandler struct {
@@ -48,7 +49,7 @@ func (bucket BucketHandler) PutObject(key string, body []byte) error {
 		Bucket:       &bucket.s3Config.Bucket,
 		Key:          aws.String(bucket.s3Config.Prefix + adjustedKey),
 		Body:         bytes.NewReader(body),
-		StorageClass: bucket.s3Config.Tier,
+		StorageClass: bucket.getTier(key),
 	})
 
 	return err
@@ -65,4 +66,28 @@ func (bucket BucketHandler) GetObject(key string) ([]byte, error) {
 	}
 
 	return io.ReadAll(result.Body)
+}
+
+func (bucket BucketHandler) getTier(key string) types.StorageClass {
+	for _, element := range bucket.s3Config.Tier.Folders {
+		for _, match := range element.Matches {
+			folderName := match
+			if !strings.HasSuffix(folderName, "/") {
+				folderName = folderName + "/" // guarantee folder match and not file match
+			}
+			if strings.Contains(key, folderName) {
+				return element.Tier
+			}
+		}
+	}
+
+	for _, element := range bucket.s3Config.Tier.Files {
+		for _, match := range element.Matches {
+			if strings.HasSuffix(key, match) {
+				return element.Tier
+			}
+		}
+	}
+
+	return bucket.s3Config.Tier.Default
 }

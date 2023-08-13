@@ -18,10 +18,21 @@ const (
 	Smb                  = "smb"
 )
 
+type TierException struct {
+	Tier    types.StorageClass `json:"tier"`
+	Matches []string           `json:"matches"`
+}
+
+type S3TierObject struct {
+	Default types.StorageClass `json:"default"`
+	Files   []TierException    `json:"files"`
+	Folders []TierException    `json:"folders"`
+}
+
 type S3Object struct {
-	Bucket string             `json:"bucket"`
-	Prefix string             `json:"prefix"`
-	Tier   types.StorageClass `json:"tier"`
+	Bucket string       `json:"bucket"`
+	Prefix string       `json:"prefix"`
+	Tier   S3TierObject `json:"tier"`
 }
 
 type KeyObject struct {

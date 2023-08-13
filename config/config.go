@@ -60,8 +60,12 @@ func parseJSONConfig(consts *common.BackupConstants) (*common.ConfigFile, error)
 		Path: dirname + "/.ssh/",
 	}
 
+	s3TierObject := common.S3TierObject{
+		Default: "STANDARD",
+	}
+
 	s3Object := common.S3Object{
-		Tier: "STANDARD",
+		Tier: s3TierObject,
 	}
 
 	config := common.ConfigFile{
