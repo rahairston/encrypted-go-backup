@@ -69,6 +69,14 @@ func (bucket BucketHandler) GetObject(key string) ([]byte, error) {
 }
 
 func (bucket BucketHandler) getTier(key string) types.StorageClass {
+	for _, element := range bucket.s3Config.Tier.Files { // File match first then folder match
+		for _, match := range element.Matches {
+			if strings.HasSuffix(key, match) {
+				return element.Tier
+			}
+		}
+	}
+
 	for _, element := range bucket.s3Config.Tier.Folders {
 		for _, match := range element.Matches {
 			folderName := match
@@ -76,14 +84,6 @@ func (bucket BucketHandler) getTier(key string) types.StorageClass {
 				folderName = folderName + "/" // guarantee folder match and not file match
 			}
 			if strings.Contains(key, folderName) {
-				return element.Tier
-			}
-		}
-	}
-
-	for _, element := range bucket.s3Config.Tier.Files {
-		for _, match := range element.Matches {
-			if strings.HasSuffix(key, match) {
 				return element.Tier
 			}
 		}
