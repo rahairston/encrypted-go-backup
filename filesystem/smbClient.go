@@ -1,10 +1,11 @@
 package filesystem
 
 import (
-	"backup/common"
 	"errors"
 	"net"
 	"strings"
+
+	"github.com/rahairston/EncryptedGoBackup/common"
 
 	"github.com/hirochachacha/go-smb2"
 )

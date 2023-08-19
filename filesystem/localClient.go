@@ -1,12 +1,13 @@
 package filesystem
 
 import (
-	"backup/common"
 	"errors"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/rahairston/EncryptedGoBackup/common"
 )
 
 type LocalClient struct {

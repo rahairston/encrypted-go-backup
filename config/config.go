@@ -1,7 +1,6 @@
 package config
 
 import (
-	"backup/common"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,6 +8,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/rahairston/EncryptedGoBackup/common"
 )
 
 func BuildBackupConfig(consts *common.BackupConstants) (*common.BackupConfig, error) {

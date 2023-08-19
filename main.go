@@ -1,12 +1,13 @@
 package main
 
 import (
-	"backup/aws"
-	"backup/common"
-	"backup/config"
-	"backup/filesystem"
 	"log"
 	"os"
+
+	"github.com/rahairston/EncryptedGoBackup/aws"
+	"github.com/rahairston/EncryptedGoBackup/common"
+	"github.com/rahairston/EncryptedGoBackup/config"
+	"github.com/rahairston/EncryptedGoBackup/filesystem"
 )
 
 func main() {

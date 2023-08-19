@@ -1,0 +1,50 @@
+{
+    "s3": {
+        "bucket": "bucket-name-to-use",
+        "prefix": "prefix-to-append",
+        "tier": {
+            "default": "STANDARD",
+            "files": [
+                {
+                    "tier": "GLACIER",
+                    "matches": ["file1", "file2"]
+                },
+                {
+                    "tier": "GLACIER_IR",
+                    "matches": ["file3"]
+                }
+            ],
+            "folders": [
+                {
+                    "tier": "GLACIER_IR",
+                    "matches": ["folder1", "folder2"]
+                }
+            ]
+        }
+    },
+    "key": {
+        "fileName": "key-name-from-above",
+        "path": "key-location-on-computer"
+    },
+    "backup": {
+        "path": "path/of/files/to/backup",
+        "connection": {
+            "type": "smb",
+            "smbConfig": {
+                "authentication": {
+                    "username": "username",
+                    "password": "password"
+                },
+                "mountPoint": "mountName",
+                "host": "hostname",
+                "port": "445"
+            }
+        },
+        "exclude":{
+            "folders": ["test", "nope"],
+            "files": ["test.txt"]
+        }
+    },
+    "decryptPath": "folder-to-store-decrypted-files",
+    "profile": "aws-profile-name"
+}

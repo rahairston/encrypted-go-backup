@@ -1,11 +1,12 @@
 package filesystem
 
 import (
-	"backup/aws"
-	"backup/common"
-	"backup/encryption"
 	"log"
 	"strings"
+
+	"github.com/rahairston/EncryptedGoBackup/aws"
+	"github.com/rahairston/EncryptedGoBackup/common"
+	"github.com/rahairston/EncryptedGoBackup/encryption"
 )
 
 type DirClient struct {

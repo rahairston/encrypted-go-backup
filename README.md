@@ -22,6 +22,11 @@ This project runs off of a user provided Config file named `config.json` located
 |-|-|-|-|
 |`s3.bucket`| S3 bucket in the AWS Account to push to| X |None|
 |`s3.prefix`| Prefix to append to the file names when pushing to S3 | |None|
+|`s3.tier.default`| S3 Storage Tier to use by default on files | |`STANDARD`|
+|`s3.tier.files[].tier`| S3 Storage Tier to use on provided files | |None|
+|`s3.tier.files[].matches[]`| List of files for tier match | |None|
+|`s3.tier.folders[].tier`| S3 Storage Tier to use on provided folders | |None|
+|`s3.tier.folders[].matches[]`| List of folders for tier match | |None|
 |`key.fileName`|the filename of the public key/private key combo. Only provide the base name. the `.pub` will be appended|X|None|
 |`key.path`|The full path to the location of the key files||`~/.ssh/`*|
 |`backup.path`**|The path to find, encrypt, and upload files from. (must be directory)|X|None|
@@ -31,6 +36,8 @@ This project runs off of a user provided Config file named `config.json` located
 |`backup.connection.smbConfig.mountPoint`|SMB Mount Point to mount to.|X (if type `smb`)|None|
 |`backup.connection.smbConfig.host`|SMB Server Hostname|X (if type `smb`)|None|
 |`backup.connection.smbConfig.port`|SMB Server Port||445|
+|`exclude.folders`|List of folders to exclude from process||`[]`|
+|`exclude.files`|List of files to exclude from process||`[]`|
 |`decryptPath`|The path to store decrypted files on a decrypt run||None|
 |`profile`| AWS Profile name for profiles stored on running machine||`default`
 
@@ -42,7 +49,26 @@ This project runs off of a user provided Config file named `config.json` located
 {
     "s3": {
         "bucket": "bucket-name-to-use",
-        "prefix": "prefix-to-append"
+        "prefix": "prefix-to-append",
+        "tier": {
+            "default": "STANDARD",
+            "files": [
+                {
+                    "tier": "GLACIER",
+                    "matches": ["file1", "file2"]
+                },
+                {
+                    "tier": "GLACIER_IR",
+                    "matches": ["file3"]
+                }
+            ],
+            "folders": [
+                {
+                    "tier": "GLACIER_IR",
+                    "matches": ["folder1", "folder2"]
+                }
+            ]
+        }
     },
     "key": {
         "fileName": "key-name-from-above",
@@ -61,7 +87,10 @@ This project runs off of a user provided Config file named `config.json` located
                 "host": "hostname",
                 "port": "445"
             }
-
+        },
+        "exclude":{
+            "folders": ["test", "nope"],
+            "files": ["test.txt"]
         }
     },
     "decryptPath": "folder-to-store-decrypted-files",
@@ -81,9 +110,9 @@ By default, the script will ENCRYPT files without any argument present. The only
 
 ### Example Usage
 
-`./backup`\
-`./backup encrypt`\
-`./backup decrypt`
+`./backitup`\
+`./backitup encrypt`\
+`./backitup decrypt`
 
 ## Setting up AWS Access
 

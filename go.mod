@@ -1,4 +1,4 @@
-module backup
+module github.com/rahairston/EncryptedGoBackup
 
 go 1.18
 
