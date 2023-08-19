@@ -13,15 +13,8 @@ func main() {
 
 	consts := common.GetOSConstants()
 
-	logFile, err := os.OpenFile(consts.LoggingLocation+"output.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-
-	if err != nil {
-		log.Panic(err)
-	}
-
+	logFile := config.SetLoggingFile(consts)
 	defer logFile.Close()
-
-	log.SetOutput(logFile)
 
 	conf, err := config.BuildBackupConfig(consts)
 

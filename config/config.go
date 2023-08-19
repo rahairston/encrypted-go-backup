@@ -114,3 +114,19 @@ func WriteLastModifiedFile(consts *common.BackupConstants) {
 
 	file.WriteString(fmt.Sprint(now.Unix()))
 }
+
+func SetLoggingFile(consts *common.BackupConstants) *os.File {
+	now := time.Now().UTC()
+
+	logFile, err := os.OpenFile(consts.LoggingLocation+now.Format("2006-01-02")+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	log.SetOutput(logFile)
+
+	log.Println("Starting...")
+
+	return logFile
+}

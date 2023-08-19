@@ -49,7 +49,7 @@ func (bucket BucketHandler) PutObject(key string, body []byte) error {
 		Bucket:       &bucket.s3Config.Bucket,
 		Key:          aws.String(bucket.s3Config.Prefix + adjustedKey),
 		Body:         bytes.NewReader(body),
-		StorageClass: bucket.getTier(key),
+		StorageClass: bucket.getTier(adjustedKey),
 	})
 
 	return err
