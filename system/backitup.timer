@@ -4,7 +4,7 @@ Requires=backitup@.service
 
 [Timer]
 Unit=backitup@.service
-OnCalendar=*-*-* 11:10:00
+OnCalendar=*-*-* 03:10:00
 
 [Install]
 WantedBy=timer.target
