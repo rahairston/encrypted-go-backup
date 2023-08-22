@@ -41,13 +41,17 @@ func (bucket BucketHandler) PutObject(key string, body []byte) error {
 		adjustedKey = strings.Replace(key, "\\", "/", -1)
 	}
 
-	if !strings.HasSuffix(adjustedKey, "/") {
-		adjustedKey = "/" + adjustedKey
+	if !strings.HasPrefix(adjustedKey, "/") && !strings.HasSuffix(bucket.s3Config.Prefix, "/") {
+		adjustedKey = bucket.s3Config.Prefix + "/" + adjustedKey
+	} else if !strings.HasPrefix(adjustedKey, "/") || !strings.HasSuffix(bucket.s3Config.Prefix, "/") {
+		adjustedKey = bucket.s3Config.Prefix + adjustedKey
+	} else {
+		adjustedKey = bucket.s3Config.Prefix + strings.TrimPrefix(adjustedKey, "/")
 	}
 
 	_, err := bucket.client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket:       &bucket.s3Config.Bucket,
-		Key:          aws.String(bucket.s3Config.Prefix + adjustedKey),
+		Key:          aws.String(adjustedKey),
 		Body:         bytes.NewReader(body),
 		StorageClass: bucket.getTier(adjustedKey),
 	})
