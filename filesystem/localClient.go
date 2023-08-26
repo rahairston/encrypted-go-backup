@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rahairston/EncryptedGoBackup/common"
+	"github.com/rahairston/encrypted-go-backup/common"
 )
 
 type LocalClient struct {

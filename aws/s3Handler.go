@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/rahairston/EncryptedGoBackup/common"
+	"github.com/rahairston/encrypted-go-backup/common"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"

@@ -4,10 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/rahairston/EncryptedGoBackup/aws"
-	"github.com/rahairston/EncryptedGoBackup/common"
-	"github.com/rahairston/EncryptedGoBackup/config"
-	"github.com/rahairston/EncryptedGoBackup/filesystem"
+	"github.com/rahairston/encrypted-go-backup/aws"
+	"github.com/rahairston/encrypted-go-backup/common"
+	"github.com/rahairston/encrypted-go-backup/config"
+	"github.com/rahairston/encrypted-go-backup/filesystem"
 )
 
 func main() {

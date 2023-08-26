@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/rahairston/EncryptedGoBackup/common"
+	"github.com/rahairston/encrypted-go-backup/common"
 )
 
 func BuildBackupConfig(consts *common.BackupConstants) (*common.BackupConfig, error) {

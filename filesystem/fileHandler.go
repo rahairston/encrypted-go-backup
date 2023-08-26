@@ -4,9 +4,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/rahairston/EncryptedGoBackup/aws"
-	"github.com/rahairston/EncryptedGoBackup/common"
-	"github.com/rahairston/EncryptedGoBackup/encryption"
+	"github.com/rahairston/encrypted-go-backup/aws"
+	"github.com/rahairston/encrypted-go-backup/common"
+	"github.com/rahairston/encrypted-go-backup/encryption"
 )
 
 type DirClient struct {

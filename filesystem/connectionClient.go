@@ -1,7 +1,7 @@
 package filesystem
 
 import (
-	"github.com/rahairston/EncryptedGoBackup/common"
+	"github.com/rahairston/encrypted-go-backup/common"
 )
 
 func Connect(connectionConfig common.ConnectionObject) (common.FileSystem, error) {

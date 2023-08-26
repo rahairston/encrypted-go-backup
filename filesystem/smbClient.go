@@ -5,7 +5,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/rahairston/EncryptedGoBackup/common"
+	"github.com/rahairston/encrypted-go-backup/common"
 
 	"github.com/hirochachacha/go-smb2"
 )
