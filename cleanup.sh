@@ -1,2 +1,6 @@
-rm -rf /var/log/encrypted-go-backup/
-rm -rf /etc/encrypted-go-backup/
+#!/bin/sh
+rm /var/log/encrypted-go-backup/*
+rm /etc/encrypted-go-backup/*
+
+rmdir /var/log/encrypted-go-backup/
+rmdir /etc/encrypted-go-backup/
