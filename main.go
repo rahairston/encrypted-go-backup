@@ -51,4 +51,6 @@ func main() {
 	} else {
 		log.Fatal("Unrecognized Arguments. Leave Blank or supply 'encrypt' or 'decrypt'")
 	}
+
+	log.Println("Backup Complete.")
 }

@@ -7,4 +7,4 @@ Unit=encrypted-go-backup@.service
 OnCalendar=*-*-* 03:10:00
 
 [Install]
-WantedBy=timer.target
+WantedBy=timers.target
