@@ -1,9 +1,9 @@
 [Unit]
 Description=Backup to AWS Encryption Service
-Requires=backitup@.service
+Requires=encrypted-go-backup@.service
 
 [Timer]
-Unit=backitup@.service
+Unit=encrypted-go-backup@.service
 OnCalendar=*-*-* 03:10:00
 
 [Install]

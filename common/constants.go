@@ -24,13 +24,13 @@ func GetOSConstants() *BackupConstants {
 			home = os.Getenv("USERPROFILE")
 		}
 		return &BackupConstants{
-			LoggingLocation: home + "\\AppData\\Local\\backitup\\",
-			ConfigLocation:  home + "\\AppData\\Local\\backitup\\",
+			LoggingLocation: home + "\\AppData\\Local\\encrypted-go-backup\\",
+			ConfigLocation:  home + "\\AppData\\Local\\encrypted-go-backup\\",
 		}
 	default:
 		return &BackupConstants{
-			LoggingLocation: "/var/log/backitup/",
-			ConfigLocation:  "/etc/backitup/",
+			LoggingLocation: "/var/log/encrypted-go-backup/",
+			ConfigLocation:  "/etc/encrypted-go-backup/",
 		}
 	}
 }

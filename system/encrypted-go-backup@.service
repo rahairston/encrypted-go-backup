@@ -1,11 +1,11 @@
 [Unit]
 Description=Backup to AWS Encryption Service
-Wants=backitup.timer
+Wants=encrypted-go-backup.timer
 
 [Service]
 Type=oneshot
 User=%i
-ExecStart=/etc/backitup/backitup
+ExecStart=/etc/encrypted-go-backup/encrypted-go-backup
 
 [Install]
 WantedBy=multi-user.target

@@ -15,8 +15,8 @@ Make sure the public key and private key share the same name, with the private k
 ## Generating the config.json
 
 This project runs off of a user provided Config file named `config.json` located in:
-- `/etc/backitup/` on Unix like environments
-- `\$HOME_DIRECTORY\AppData\Local\backitup\` on Windows environments
+- `/etc/encrypted-go-backup/` on Unix like environments
+- `\$HOME_DIRECTORY\AppData\Local\encrypted-go-backup\` on Windows environments
 
 | Config item key | Description | required | default |
 |-|-|-|-|
@@ -110,9 +110,9 @@ By default, the script will ENCRYPT files without any argument present. The only
 
 ### Example Usage
 
-`./backitup`\
-`./backitup encrypt`\
-`./backitup decrypt`
+`./encrypted-go-backup`\
+`./encrypted-go-backup encrypt`\
+`./encrypted-go-backup decrypt`
 
 ## Setting up AWS Access
 
