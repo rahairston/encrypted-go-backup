@@ -1,3 +1,4 @@
+#!/bin/sh
 USER_ID=$USER
 
 go mod download
