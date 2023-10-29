@@ -7,7 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
-	"io/ioutil"
+	"os"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -18,7 +18,7 @@ type KeyHandler struct {
 }
 
 func BuildKeyHandler(fileName string) (*KeyHandler, error) {
-	pubKey, err := ioutil.ReadFile(fileName + ".pub")
+	pubKey, err := os.ReadFile(fileName + ".pub")
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func BuildKeyHandler(fileName string) (*KeyHandler, error) {
 	// Finally, we can convert back to an *rsa.PublicKey
 	pub := pubCrypto.(*rsa.PublicKey)
 
-	privKey, err := ioutil.ReadFile(fileName)
+	privKey, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}

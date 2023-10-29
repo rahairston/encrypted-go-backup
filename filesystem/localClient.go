@@ -2,7 +2,6 @@ package filesystem
 
 import (
 	"errors"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -45,7 +44,7 @@ func (lc LocalClient) ValidatePath(path string) string {
 	if err != nil {
 		panic(err)
 	} else if !info.IsDir() {
-		panic(errors.New("Path provided must be a Folder."))
+		panic(errors.New("path provided must be a Folder"))
 	} else if !strings.HasSuffix(path, common.Separator) {
 		return path + common.Separator
 	}
@@ -54,7 +53,7 @@ func (lc LocalClient) ValidatePath(path string) string {
 }
 
 func (lc LocalClient) ReadFile(fileName string) ([]byte, error) {
-	return ioutil.ReadFile(fileName)
+	return os.ReadFile(fileName)
 }
 
 func (lc LocalClient) Close() {

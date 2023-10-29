@@ -113,7 +113,7 @@ func (dir DirClient) DownloadAndDecryptFile(fileName string, c chan string) {
 	}
 
 	// TODO Write file to decrypted path
-	// ioutil.WriteFile(path + fileName, decrypted, 0777)
+	// os.WriteFile(path + fileName, decrypted, 0777)
 
 	c <- fileName
 }

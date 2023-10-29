@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -40,12 +40,14 @@ func BuildBackupConfig(consts *common.BackupConstants) (*common.BackupConfig, er
 
 func parseJSONConfig(consts *common.BackupConstants) (*common.ConfigFile, error) {
 	jsonFile, err := os.Open(consts.ConfigLocation + "config.json")
-	defer jsonFile.Close()
+
 	if err != nil {
 		return nil, err
 	}
 
-	jsonData, err := ioutil.ReadAll(jsonFile)
+	defer jsonFile.Close()
+
+	jsonData, err := io.ReadAll(jsonFile)
 
 	if err != nil {
 		return nil, err
@@ -88,7 +90,7 @@ func parseLastModifiedFile(consts *common.BackupConstants) int64 {
 
 	defer file.Close()
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		return -1
 	}
