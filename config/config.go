@@ -77,7 +77,11 @@ func parseJSONConfig(consts *common.BackupConstants) (*common.ConfigFile, error)
 		Profile: "default",
 	}
 
-	json.Unmarshal(jsonData, &config)
+	err = json.Unmarshal(jsonData, &config)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &config, nil
 }
