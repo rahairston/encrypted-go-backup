@@ -7,6 +7,7 @@ import (
 type FileSystem interface {
 	GetFileNames(path string, exclusions ExcludeObject, lastModifiedDt int64) []string
 	ValidatePath(path string) string
+	ValidatePaths(path string, folders []string) []string
 	ReadFile(fileName string) ([]byte, error)
 	Close()
 }
@@ -63,7 +64,8 @@ type ExcludeObject struct {
 }
 
 type BackupObject struct {
-	Path       string           `json:"path"`
+	BasePath   string           `json:"basePath"`
+	Folders    []string         `json:"folders"`
 	Connection ConnectionObject `json:"connection"`
 	Exclusions ExcludeObject    `json:"exclude"`
 }

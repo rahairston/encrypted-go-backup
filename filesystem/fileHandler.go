@@ -10,7 +10,8 @@ import (
 )
 
 type DirClient struct {
-	path           *string
+	base           *string
+	paths          *[]string
 	keys           *encryption.KeyHandler
 	s3Handler      *aws.BucketHandler
 	fs             common.FileSystem
@@ -21,9 +22,10 @@ type DirClient struct {
 func BuildDirClient(backupConfig *common.BackupConfig,
 	s3Handler *aws.BucketHandler, fs common.FileSystem) (*DirClient, error) {
 
-	path := backupConfig.Backup.Path
+	path := fs.ValidatePath(backupConfig.Backup.BasePath)
+	folders := backupConfig.Backup.Folders
 
-	adjustedPath := fs.ValidatePath(path)
+	adjustedPaths := fs.ValidatePaths(path, folders)
 
 	keys, err := encryption.BuildKeyHandler(backupConfig.KeyFile)
 
@@ -32,7 +34,8 @@ func BuildDirClient(backupConfig *common.BackupConfig,
 	}
 
 	return &DirClient{
-		path:           &adjustedPath,
+		base:           &path,
+		paths:          &adjustedPaths,
 		keys:           keys,
 		s3Handler:      s3Handler,
 		fs:             fs,
@@ -44,17 +47,20 @@ func BuildDirClient(backupConfig *common.BackupConfig,
 func (dir DirClient) EncryptFiles() {
 	defer dir.fs.Close()
 
-	fileNames := dir.fs.GetFileNames(*dir.path, dir.exclusions, dir.lastModifiedDt)
+	for _, entry := range *dir.paths {
+		fileNames := dir.fs.GetFileNames(entry, dir.exclusions, dir.lastModifiedDt)
 
-	c := make(chan string, len(fileNames))
+		c := make(chan string, len(fileNames))
 
-	for _, fileName := range fileNames {
-		go dir.EncryptAndUploadFile(fileName, c)
+		for _, fileName := range fileNames {
+			go dir.EncryptAndUploadFile(fileName, c)
+		}
+
+		for i := 0; i < cap(c); i++ {
+			log.Println(<-c)
+		}
 	}
 
-	for i := 0; i < cap(c); i++ {
-		log.Println(<-c)
-	}
 }
 
 func (dir DirClient) EncryptAndUploadFile(fileName string, c chan string) {
@@ -71,7 +77,7 @@ func (dir DirClient) EncryptAndUploadFile(fileName string, c chan string) {
 		log.Panic(fileName, err)
 	}
 
-	var adjustedS3Key = strings.TrimPrefix(fileName, *dir.path)
+	var adjustedS3Key = strings.TrimPrefix(fileName, *dir.base)
 
 	err = dir.s3Handler.PutObject(adjustedS3Key, encrypted)
 	if err != nil {
@@ -85,21 +91,23 @@ func (dir DirClient) EncryptAndUploadFile(fileName string, c chan string) {
 // then go Download and Decrypt into location
 func (dir DirClient) DecryptFiles() {
 	defer dir.fs.Close()
-	fileNames := dir.fs.GetFileNames(*dir.path, dir.exclusions, dir.lastModifiedDt)
+	for _, entry := range *dir.paths {
+		fileNames := dir.fs.GetFileNames(entry, dir.exclusions, dir.lastModifiedDt)
 
-	c := make(chan string, len(fileNames))
+		c := make(chan string, len(fileNames))
 
-	for _, fileName := range fileNames {
-		go dir.DownloadAndDecryptFile(fileName, c)
-	}
+		for _, fileName := range fileNames {
+			go dir.DownloadAndDecryptFile(fileName, c)
+		}
 
-	for i := 0; i < cap(c); i++ {
-		log.Println(<-c)
+		for i := 0; i < cap(c); i++ {
+			log.Println(<-c)
+		}
 	}
 }
 
 func (dir DirClient) DownloadAndDecryptFile(fileName string, c chan string) {
-	var adjustedS3Key = strings.TrimPrefix(fileName, *dir.path)
+	var adjustedS3Key = strings.TrimPrefix(fileName, *dir.base)
 
 	data, err := dir.s3Handler.GetObject(adjustedS3Key)
 	if err != nil {

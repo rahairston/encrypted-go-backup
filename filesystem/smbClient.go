@@ -40,7 +40,7 @@ func SmbConnect(config common.SmbConfig) (*SmbClient, error) {
 		return nil, err
 	}
 
-	fs, err := s.Mount(config.MountPoint)
+	fs, _ := s.Mount(config.MountPoint)
 
 	return &SmbClient{
 		s:    s,
@@ -77,12 +77,42 @@ func (smbClient SmbClient) ValidatePath(path string) string {
 	if err != nil {
 		panic(err)
 	} else if !info.IsDir() {
-		panic(errors.New("Path provided must be a Folder."))
+		panic(errors.New("path provided must be a folder"))
 	} else if !strings.HasSuffix(path, "\\") { // Keep \\ since SMB is Windows file pathing
 		return path + "\\"
 	}
 
 	return path
+}
+
+func (smbClient SmbClient) ValidatePaths(path string, folders []string) []string {
+	var result []string
+	info, err := smbClient.fs.Stat(path)
+
+	adjustedPath := path
+
+	if err != nil {
+		panic(err)
+	} else if !info.IsDir() {
+		panic(errors.New("base path provided must be a folder"))
+	} else if !strings.HasSuffix(path, "\\") { // Keep \\ since SMB is Windows file pathing
+		adjustedPath += "\\"
+	}
+
+	if len(folders) == 0 {
+		result = append(result, adjustedPath)
+	}
+
+	for _, entry := range folders {
+		folder := entry
+		if strings.HasPrefix(entry, "\\") {
+			folder = strings.TrimPrefix(entry, "\\")
+		}
+
+		result = append(result, smbClient.ValidatePath(adjustedPath+folder))
+	}
+
+	return result
 }
 
 func (smbClient SmbClient) ReadFile(fileName string) ([]byte, error) {
