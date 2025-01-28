@@ -12,7 +12,9 @@ import (
 
 func main() {
 
-	consts := common.GetOSConstants()
+	args := os.Args
+
+	consts := common.GetOSConstants(args)
 
 	logFile := config.SetLoggingFile(consts)
 	defer logFile.Close()
@@ -40,8 +42,6 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-
-	args := os.Args
 
 	if len(args) == 1 || args[1] == "encrypt" {
 		dirClient.EncryptFiles()

@@ -3,6 +3,9 @@ package aws
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/binary"
+	"hash/crc32"
 	"io"
 	"log"
 	"strings"
@@ -49,11 +52,18 @@ func (bucket BucketHandler) PutObject(key string, body []byte) error {
 		adjustedKey = bucket.s3Config.Prefix + strings.TrimPrefix(adjustedKey, "/")
 	}
 
+	checksum := crc32.ChecksumIEEE(body)
+	data := make([]byte, 4) // uint32 is 4 bytes
+	binary.BigEndian.PutUint32(data, checksum)
+
+	encoded := base64.StdEncoding.EncodeToString(data)
+
 	_, err := bucket.client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket:       &bucket.s3Config.Bucket,
-		Key:          aws.String(adjustedKey),
-		Body:         bytes.NewReader(body),
-		StorageClass: bucket.getTier(adjustedKey),
+		Bucket:        &bucket.s3Config.Bucket,
+		Key:           aws.String(adjustedKey),
+		Body:          bytes.NewReader(body),
+		StorageClass:  bucket.getTier(adjustedKey),
+		ChecksumCRC32: &encoded,
 	})
 
 	return err

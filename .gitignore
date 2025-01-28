@@ -1,3 +1,4 @@
 test_config.json
 *.pub
 encrypted-go-backup
+local_run/

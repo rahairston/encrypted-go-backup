@@ -15,7 +15,13 @@ const (
 	LastRunFileName string = "last_run.conf"
 )
 
-func GetOSConstants() *BackupConstants {
+func GetOSConstants(args []string) *BackupConstants {
+	if len(args) > 2 && args[2] == "local" {
+		return &BackupConstants{
+			LoggingLocation: "./local_run/",
+			ConfigLocation:  "./local_run/",
+		}
+	}
 	opsys := runtime.GOOS
 	switch opsys {
 	case "windows":
